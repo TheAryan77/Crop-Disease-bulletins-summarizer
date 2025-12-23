@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Disease Advisory Summarizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .upload-section {
+            text-align: center;
+            padding: 30px;
+            border: 3px dashed #56ab2f;
+            border-radius: 10px;
+            background: #f0fdf4;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .upload-section:hover {
+            border-color: #2d7a1f;
+            background: #e8f9ed;
+        }
+        
+        .upload-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        input[type="file"] {
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            background: white;
+        }
+        
+        button {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #56ab2f 0%, #2d7a1f 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(86, 171, 47, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #56ab2f 0%, #2d7a1f 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .keywords {
+            background: #f0fdf4;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .keywords h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .keyword-tag {
+            background: linear-gradient(135deg, #56ab2f 0%, #2d7a1f 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .summary {
+            background: #eef9ee;
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .summary h3 {
+            color: #1e7e34;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .summary li {
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .summary li:hover {
+            transform: translateX(5px);
+        }
+        
+        .summary li:before {
+            content: "🌾";
+            margin-right: 10px;
+        }
+        
+        .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .box {
+                padding: 20px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 Crop Disease Advisory Summarizer</h1>
+            <p>Advanced NLP-based summarization for agricultural bulletins</p>
+        </div>
+
+        <div class="box">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="upload-section">
+                <h3>📄 Upload Your Agricultural Bulletin (PDF)</h3>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="file" name="pdf" accept=".pdf" required>
+                    <br>
+                    <button type="submit">🔍 Analyze & Summarize</button>
+                </form>
+            </div>
+
+            {% if stats %}
+            <div class="stats">
+                <div class="stat-card">
+                    <h4>Total Sentences</h4>
+                    <p>{{ stats.total_sentences }}</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Words</h4>
+                    <p>{{ stats.total_words }}</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Summary Sentences</h4>
+                    <p>{{ stats.summary_sentences }}</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Compression</h4>
+                    <p>{{ stats.compression_ratio }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if keywords %}
+            <div class="keywords">
+                <h3><span class="icon">🔑</span>Key Terms Identified</h3>
+                <div class="keyword-tags">
+                    {% for keyword in keywords %}
+                        <span class="keyword-tag">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if summary %}
+            <div class="summary">
+                <h3><span class="icon">📌</span>Advisory Summary</h3>
+                <ul>
+                    {% for sentence in summary %}
+                        <li>{{ sentence }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            <p>💡 Using advanced NLP techniques for extractive summarization</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Powered by NLTK | Flask | PyMuPDF</p>
+        </div>
+    </div>
+</body>
+</html>
